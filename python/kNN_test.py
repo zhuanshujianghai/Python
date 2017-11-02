@@ -11,19 +11,18 @@ import kNN
 
 #kNN.file3('datingTestSet.txt','datingTestSet3.txt');
 
-datingDataMat,datingLabels = kNN.file2matrix('datingTestSet2.txt')
+#datingDataMat,datingLabels = kNN.file2matrix('datingTestSet2.txt')
 
 # result = kNN.classify1([136,50,0.428964],datingDataMat,datingLabels,20)
 # print(result)
 
-kNN.figure(datingDataMat,datingLabels)
 
-# normMat,ranges,minVals = kNN.autoNorm(datingDataMat)
-# print(normMat)
-# print(ranges)
-# print(minVals)
 
-#kNN.datingClassTest()
+#normMat,ranges,minVals = kNN.autoNorm(datingDataMat)
+
+#kNN.figure(normMat,datingLabels)
+
+kNN.datingClassTest()
 
 #kNN.classifyPerson()
 

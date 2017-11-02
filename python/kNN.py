@@ -80,11 +80,37 @@ def autoNorm(dataSet):
 def figure(datingDataMat,datingLabels):
     #https://www.zhihu.com/question/37146648
     zhfont = matplotlib.font_manager.FontProperties(fname='C:/Windows/Fonts/simsun.ttc')
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8,6),dpi=80)
     ax = fig.add_subplot(111)
-    a=ax.scatter(datingDataMat[:, 0],datingDataMat[:, 1], 15.0*array(datingLabels), 15.0*array(datingLabels))
-    plt.xlabel(u'每年获取的飞行里程数', fontproperties=zhfont)
-    plt.ylabel(u'玩视频游戏所消耗的事件百分比', fontproperties=zhfont)
+    type1_x = []
+    type1_y = []
+    type2_x = []
+    type2_y = []
+    type3_x = []
+    type3_y = []
+    # 0 代表飞行的里程数
+    # 1 代表玩视频游戏的百分比
+    # 2 每周消费的冰淇淋公升数
+    x=0;
+    y=2;
+    x_str_dic = {0: "每年获取的飞行里程数", 1: "玩视频游戏所消耗的事件百分比", 2: "每周消费的冰淇淋公升数"}
+    y_str_dic = {0: "每年获取的飞行里程数", 1: "玩视频游戏所消耗的事件百分比", 2: "每周消费的冰淇淋公升数"}
+    for i in range(len(datingLabels)):
+        if datingLabels[i]==1:
+            type1_x.append(datingDataMat[i][x])
+            type1_y.append(datingDataMat[i][y])
+        elif datingLabels[i]==2:
+            type2_x.append(datingDataMat[i][x])
+            type2_y.append(datingDataMat[i][y])
+        elif datingLabels[i]==3:
+            type3_x.append(datingDataMat[i][x])
+            type3_y.append(datingDataMat[i][y])
+    type1 = ax.scatter(type1_x,type1_y,c="red")
+    type2 = ax.scatter(type2_x,type2_y,c="black")
+    type3 = ax.scatter(type3_x,type3_y,c="blue")
+    plt.xlabel(x_str_dic.get(x), fontproperties=zhfont)
+    plt.ylabel(y_str_dic.get(y), fontproperties=zhfont)
+    ax.legend((type1,type2,type3),(u'不喜欢',u'魅力一般',u'极具魅力'),loc=2,prop=zhfont)
     plt.show()
 
 def datingClassTest():
