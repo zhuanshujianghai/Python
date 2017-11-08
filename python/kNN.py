@@ -2,6 +2,7 @@ from numpy import *
 import operator
 import matplotlib
 import matplotlib.pyplot as plt
+from os import listdir
 
 def createDataSet0():
     group = array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
@@ -80,11 +81,37 @@ def autoNorm(dataSet):
 def figure(datingDataMat,datingLabels):
     #https://www.zhihu.com/question/37146648
     zhfont = matplotlib.font_manager.FontProperties(fname='C:/Windows/Fonts/simsun.ttc')
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8,6),dpi=80)
     ax = fig.add_subplot(111)
-    a=ax.scatter(datingDataMat[:, 0],datingDataMat[:, 1], 15.0*array(datingLabels), 15.0*array(datingLabels))
-    plt.xlabel(u'每年获取的飞行里程数', fontproperties=zhfont)
-    plt.ylabel(u'玩视频游戏所消耗的事件百分比', fontproperties=zhfont)
+    type1_x = []
+    type1_y = []
+    type2_x = []
+    type2_y = []
+    type3_x = []
+    type3_y = []
+    # 0 代表飞行的里程数
+    # 1 代表玩视频游戏的百分比
+    # 2 每周消费的冰淇淋公升数
+    x=0;
+    y=1;
+    x_str_dic = {0: "每年获取的飞行里程数", 1: "玩视频游戏所消耗的事件百分比", 2: "每周消费的冰淇淋公升数"}
+    y_str_dic = {0: "每年获取的飞行里程数", 1: "玩视频游戏所消耗的事件百分比", 2: "每周消费的冰淇淋公升数"}
+    for i in range(len(datingLabels)):
+        if datingLabels[i]==1:
+            type1_x.append(datingDataMat[i][x])
+            type1_y.append(datingDataMat[i][y])
+        elif datingLabels[i]==2:
+            type2_x.append(datingDataMat[i][x])
+            type2_y.append(datingDataMat[i][y])
+        elif datingLabels[i]==3:
+            type3_x.append(datingDataMat[i][x])
+            type3_y.append(datingDataMat[i][y])
+    type1 = ax.scatter(type1_x,type1_y,c="red")
+    type2 = ax.scatter(type2_x,type2_y,c="black")
+    type3 = ax.scatter(type3_x,type3_y,c="blue")
+    plt.xlabel(x_str_dic.get(x), fontproperties=zhfont)
+    plt.ylabel(y_str_dic.get(y), fontproperties=zhfont)
+    ax.legend((type1,type2,type3),(u'不喜欢',u'魅力一般',u'极具魅力'),loc=2,prop=zhfont)
     plt.show()
 
 def datingClassTest():
@@ -110,3 +137,38 @@ def classifyPerson():
     inArr = array([ffMiles,percentTats,iceCream])
     classifierResult = classify1((inArr-minVals)/ranges,normMat,datingLabels,3)
     print("you will probably like this person:",resutlList[classifierResult-1])
+
+def img2vector(filename):
+    returnVect = zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j] = int(lineStr[j])
+    return returnVect
+
+def handwritingClassTest():
+    hwLabels = []
+    trainingFileList = listdir('trainingDigits')
+    m = len(trainingFileList)
+    trainingMat = zeros((m,1024))
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        hwLabels.append(classNumStr)
+        trainingMat[i,:] = img2vector("trainingDigits/%s"%fileNameStr)
+    testFileList = listdir('testDigits')
+    errorCount = 0.0
+    mTest = len(testFileList)
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUNderTest = img2vector('testDigits/%s' %fileNameStr)
+        classifierResult = classify0(vectorUNderTest,trainingMat,hwLabels,3)
+        if classifierResult!=classNumStr:
+            errorCount+=1.0
+            print("the classifier came back with: %d,the real answer is:%d,the filename:%s" % (classifierResult, classNumStr,fileNameStr))
+    print("error:%d"%errorCount)
+    print("error rate:%f"%(errorCount/float(mTest)))
