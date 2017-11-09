@@ -2,6 +2,7 @@ from numpy import *
 import operator
 import matplotlib
 import matplotlib.pyplot as plt
+from os import listdir
 
 def createDataSet0():
     group = array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
@@ -92,7 +93,7 @@ def figure(datingDataMat,datingLabels):
     # 1 代表玩视频游戏的百分比
     # 2 每周消费的冰淇淋公升数
     x=0;
-    y=2;
+    y=1;
     x_str_dic = {0: "每年获取的飞行里程数", 1: "玩视频游戏所消耗的事件百分比", 2: "每周消费的冰淇淋公升数"}
     y_str_dic = {0: "每年获取的飞行里程数", 1: "玩视频游戏所消耗的事件百分比", 2: "每周消费的冰淇淋公升数"}
     for i in range(len(datingLabels)):
@@ -136,3 +137,38 @@ def classifyPerson():
     inArr = array([ffMiles,percentTats,iceCream])
     classifierResult = classify1((inArr-minVals)/ranges,normMat,datingLabels,3)
     print("you will probably like this person:",resutlList[classifierResult-1])
+
+def img2vector(filename):
+    returnVect = zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j] = int(lineStr[j])
+    return returnVect
+
+def handwritingClassTest():
+    hwLabels = []
+    trainingFileList = listdir('trainingDigits')
+    m = len(trainingFileList)
+    trainingMat = zeros((m,1024))
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        hwLabels.append(classNumStr)
+        trainingMat[i,:] = img2vector("trainingDigits/%s"%fileNameStr)
+    testFileList = listdir('testDigits')
+    errorCount = 0.0
+    mTest = len(testFileList)
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUNderTest = img2vector('testDigits/%s' %fileNameStr)
+        classifierResult = classify0(vectorUNderTest,trainingMat,hwLabels,3)
+        if classifierResult!=classNumStr:
+            errorCount+=1.0
+            print("the classifier came back with: %d,the real answer is:%d,the filename:%s" % (classifierResult, classNumStr,fileNameStr))
+    print("error:%d"%errorCount)
+    print("error rate:%f"%(errorCount/float(mTest)))

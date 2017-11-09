@@ -22,9 +22,12 @@ import kNN
 
 #kNN.figure(normMat,datingLabels)
 
-kNN.datingClassTest()
+#kNN.datingClassTest()
 
 #kNN.classifyPerson()
 
+# result = kNN.img2vector('trainingDigits/0_0.txt')
+# print(result)
 
+kNN.handwritingClassTest()
 
