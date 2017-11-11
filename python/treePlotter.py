@@ -59,7 +59,7 @@ def plotTree(myTree,parentPt,nodeTxt):
         if type(secondDict[key]).__name__=='dict':
             plotTree(secondDict[key],cntrPt,str(key))
         else:
-            plotTree.Xoff = plotTree.xOff + 1.0/plotTree.totalW
+            plotTree.xOff = plotTree.xOff + 1.0/plotTree.totalW
             plotNode(secondDict[key],(plotTree.xOff,plotTree.yOff),cntrPt,leafNode)
             plotMidText((plotTree.xOff,plotTree.yOff),cntrPt,str(key))
     plotTree.yOff = plotTree.yOff + 1.0/plotTree.totalD
@@ -77,5 +77,5 @@ def createPlot(inTree):
 
 myTree = retrieveTree(0)
 print(myTree)
-#myTree['no surfacing'][3]='maybe'
+myTree['no surfactin'][3]='maybe'
 createPlot(myTree)
