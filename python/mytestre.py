@@ -15,75 +15,17 @@ http.client.HTTPConnection._http_vsn_str = 'HTTP/1.0'
 #检查代理ip是否可用
 def checkip(ip,port):
     try:
-        tn = telnetlib.Telnet(ip, port=port, timeout=10)
+        tn = telnetlib.Telnet(ip, port=port, timeout=1)
     except:
+        print("这个代理IP(" + ip + ":" + port + ")竟然没用")
         return False
     else:
         return True
-# url = "http://edu.csdn.net/huiyiCourse/detail/253"
-# data = urllib.request.urlopen(url).read().decode("utf-8")
-# pat = "<p>(\d*?)</p>"
-# result = re.compile(pat).findall(data)
-# print(result)
-# #print(data)
-#
-#
-# url = "https://read.douban.com/provider/all";
-# data = urllib.request.urlopen(url).read().decode("utf-8")
-# pat = "<div class=\"name\">([\u4e00-\u9fa5]*?)</div>"
-# result = re.compile(pat).findall(data)
-# print(result)
-# print(result[0])
-# fh = open("D:\English\Git_Repertory\Python\python\出版社.txt","a+")
-# for txt in result:
-#     fh.write(txt+'\n')
-# fh.close()
 
-#urllib.request.urlretrieve("http://www.baidu.com","baidu.html")
-# file = urllib.request.urlopen("https://read.douban.com/provider/all")
-# print(file.info())
-# print(file.getcode())
-# print(file.geturl())
-
-# for i in range(0,100):
-#     try:
-#         url = "http://www.135store.com"
-#         file = urllib.request.urlopen(url, timeout=1)
-#         print(str(len(file.read().decode("utf-8","ignore")))+"------------"+str(i))
-#     except Exception as err:
-#         print("出现异常"+str(err)+"------------"+str(i))
-
-# url = "http://www.135store.com/api/shop/member!login.do?ajax=yes"
-# username = "zhuanshujianghai"
-# password ="123456"
-# data = urllib.parse.urlencode({"username":username,"password":password}).encode("utf-8")
-# req = urllib.request.Request(url,data)
-# result = urllib.request.urlopen(req).read().decode("utf-8")
-# print(result)
-
-# try:
-#     url = "http://blog.csdn.net";
-#     result = urllib.request.urlopen(url)
-#     print(result.read().decode("utf-8"))
-# except urllib.error.URLError as err:
-#     #判断是否存在状态码
-#     if hasattr(err,"code"):
-#         print(err.code)
-#     #判断是否存在原因
-#     if hasattr(err,"reason"):
-#         print(err.reason)
-
-# url = "https://mp.weixin.qq.com/s/67sk-uKz9Ct4niT-f4u1KA"
-# params = {"phone":"iphone","name":"jiang"}
-# params = urllib.parse.urlencode(params)
-#
-# req_header = {"User-Agent":"Mozilla/5.0 (Linux; U; Android 2.3.6; zh-cn; GT-S5660 Build/GINGERBREAD) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1 MicroMessenger/4.5.255"}
-# req = urllib.request.Request(url)
-# req.add_header("User-Agent","Mozilla/5.0 (Linux; U; Android 2.3.6; zh-cn; GT-S5660 Build/GINGERBREAD) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1 MicroMessenger/4.5.255")
-# res = urllib.request.urlopen(req).read().decode("GBK","ignore")
-# print(res)
 path = "D:/git_repertory/Python/python"
+listip = ""
 def pachong(url,ge,ceng,filder,addurl,charset):
+    global listip
     try:
         if url.index("//", 0, 2) == 0:
             url = url[2:]
@@ -107,9 +49,18 @@ def pachong(url,ge,ceng,filder,addurl,charset):
     opener = urllib.request.build_opener()
     opener.addheaders = [headers]
     try:
-        file = urllib.request.urlopen(url)
-        print(file.info())
         data = opener.open(url).read().decode(charset, "ignore")
+        patip = "<td>(\d+?\.\d+?\.\d+?.\d+?)</td>"
+        patport = "<td>(\d+?)</td>"
+        allip = re.compile(patip).findall(data)
+        allport = re.compile(patport).findall(data)
+        if len(allip)==len(allport):
+            for i in range(len(allip)):
+                if checkip(allip[i],allport[i]):
+                    content = allip[i]+":" + allport[i]+"\n"
+                    if content not in listip:
+                        listip = listip + content
+                    print(allip[i]+":"+ allport[i]+"***************************")
     except urllib.request.URLError as err:
         print("*************************************" + url)
         return []
@@ -124,12 +75,16 @@ def pachong(url,ge,ceng,filder,addurl,charset):
         return []
     pat = "<a target=\"_blank\" href=\"(.*?)\""
     pat1 = "<a href=\"(.*?)\""
+    pat2 = "<a class=\"false\" href=\"(.*?)\""
     alllink = re.compile(pat).findall(data)
     alllink1 = re.compile(pat1).findall(data)
+    alllink2 = re.compile(pat2).findall(data)
     alllink.extend(alllink1)
+    alllink.extend(alllink2)
     new_alllink = []
     for link in alllink:
-        if link not in new_alllink and ("html" in link or "http:" in link):
+        #if link not in new_alllink and ("html" in link or "http:" in link):
+        if link not in new_alllink:
             new_alllink.append(link)
     i = 0
     thisurl=""
@@ -152,16 +107,18 @@ def pachong(url,ge,ceng,filder,addurl,charset):
             url = urllib.parse.quote(url, b)
             thisurl=url
         try:
-            file = urllib.request.urlopen(thisurl)
-            print(str(file.getcode()) + "--------" + thisurl)
-            thispath = path+"/"+filder+"/"+ str(ceng)+"/"+str(ge)
-            if os.path.exists(thispath)==False:
-                os.makedirs(thispath)
-            socket.setdefaulttimeout(2)
-            urllib.request.urlretrieve(thisurl, thispath +"/" + str(i) + ".html")
-            fh = open(thispath + "/list.txt", "a+")
-            fh.write(str(file.getcode()) + "--------" + thisurl + "\n")
-            fh.close()
+            data = opener.open(url).read().decode(charset, "ignore")
+            patip = "<td>(\d*?\.\d*?\.\d*?.\d*?)</td>"
+            patport = "<td>(\d*?)</td>"
+            allip = re.compile(patip).findall(data)
+            allport = re.compile(patport).findall(data)
+            if len(allip) == len(allport):
+                for i in range(len(allip)):
+                    if checkip(allip[i], allport[i]):
+                        content = allip[i] + ":" + allport[i] + "\n"
+                        if content not in listip:
+                            listip = listip + content
+                        print(allip[i] + ":" + allport[i] + "***************************")
         except urllib.request.URLError as err:
             print("*************************************"+thisurl)
             fh = open("D:\git_Repertory\Python\python\\"+filder+"\\"+filder+"_error.txt","a+")
@@ -189,6 +146,9 @@ def pachong(url,ge,ceng,filder,addurl,charset):
             fh.write(thisurl + "\nException\n")
             fh.close()
         i = i + 1
+    fh = open("D:\git_Repertory\PythonFile\\20171111ip.txt", "w")
+    fh.write(listip)
+    fh.close()
     return new_alllink
 def digui(alllink,ge,ceng,filder,addurl,charset):
     thisalllink=[]
@@ -205,11 +165,25 @@ def digui(alllink,ge,ceng,filder,addurl,charset):
     else:
         print("爬取完毕")
 
+# url = ["http://www.135store.com"]
+# filder = "135store"
+# addurl = "http://www.135store.com/"
+#charset = "utf-8"
 
-url = ["https://www.baidu.com/s?wd=%E4%BB%A3%E7%90%86ip&tn=94155026_hao_pg"]
-filder = "baidu"
-addurl = "http://www.baidu.com/"
-charset = "utf-8"
+# url = ["http://bbs.fuling.com/"]
+# filder = "fufeng"
+# addurl = "http://bbs.fuling.com/"
+# charset = "gbk"
+
+# url = ["http://www.taobao.com/"]
+# filder = "taobao"
+# addurl = "http://www.taobao.com/"
+# charset = "utf-8"
+
+url = ["http://www.xicidaili.com"]
+filder = "xicidaili"
+addurl = "http://www.xicidaili.com/"
+charset = "UTF-8"
 
 digui(url,1,1,filder,addurl,charset)
 
