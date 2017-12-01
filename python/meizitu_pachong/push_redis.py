@@ -3,7 +3,7 @@ import requests
 import re
 
 def push_redis_list():
-    r = Redis(host="123.207.236.26",port=6379,password="jianghaidong123456")
+    r = Redis(host="***填写自己的ip***",port=6379,password="****填写自己的密码***")
     print(r.keys('*'))
     url = "http://www.meizitu.com";
     num_result = requests.get(url,timeout=10)
