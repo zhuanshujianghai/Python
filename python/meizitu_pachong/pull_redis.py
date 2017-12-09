@@ -8,7 +8,7 @@ import random
 headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1'}
 
 def get_big_img_url():
-    r = Redis(host="123.207.236.26", port=6379, password="jianghaidong123456")
+    r = Redis(host="***填写自己的ip***",port=6379,password="****填写自己的密码***")
     print(r.keys('*'))
     while(1):
         try:
