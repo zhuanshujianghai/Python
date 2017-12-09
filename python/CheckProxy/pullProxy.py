@@ -32,7 +32,7 @@ def queryCount(ip,port):
     return len(result)
 
 def pull_check_ip_port():
-    r = Redis(host="123.207.236.26", port=6379, password="jianghaidong123456")
+    r = Redis(host="你的IP", port=6379, password="你的密码")
     while (r.llen("proxy")>0):
         try:
             proxy = r.lpop("proxy").decode("utf-8")
