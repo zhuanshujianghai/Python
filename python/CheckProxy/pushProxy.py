@@ -3,7 +3,7 @@ from redis import Redis
 import time
 
 def push_ip_port():
-    r = Redis(host="123.207.236.26", port=6379, password="jianghaidong123456")
+    r = Redis(host="你的IP", port=6379, password="你的密码")
     portshuzu = ["80","8080","808","8010","8118","8123","9000","3128","31475","54230","28264","53281"]
     #每次运行前先获取之前的ip记录
     starti = int(r.get("ip1"))
