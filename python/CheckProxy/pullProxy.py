@@ -18,16 +18,19 @@ def insert(ip,port,ipport):
     try:
         conn.query(sql)
     except:
-        print("show error")
+        print("往mysql中插入数据出错")
     conn.close()
 
 #查询realip中指定数据是否存在，返回条数
 def queryCount(ip,port):
     conn = pymysql.connect(host="127.0.0.1", port=3306, user="root", password="root", db="httpip")
-    cur = conn.cursor()
-    sql = "select * from realip where ip='" + ip + "' and port='"+port+"'"
-    cur.execute(sql)
-    result = cur.fetchall()
+    try:
+        cur = conn.cursor()
+        sql = "select * from realip where ip='" + ip + "' and port='"+port+"'"
+        cur.execute(sql)
+        result = cur.fetchall()
+    except:
+        print("从mysql中查询数据出错")
     conn.close()
     return len(result)
 
